@@ -4,6 +4,7 @@ services:
     name: msva
     runtime: python
     plan: free
+    region: frankfurt  # closest Render region to Nigeria; keep Neon in AWS Frankfurt too
     buildCommand: ./build.sh
     startCommand: gunicorn msva.wsgi:application --bind 0.0.0.0:$PORT --workers 2 --timeout 60
     healthCheckPath: /healthz/
