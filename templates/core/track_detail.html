@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+
+{% block title %}{{ track.title }} | {{ academy.name }}{% endblock %}
+{% block meta_description %}{{ track.short_description }}{% endblock %}
+
+{% block content %}
+<section class="page-hero track-hero"{% if track.cover_image %} style="--track-cover: url('{{ track.cover_image.url }}')"{% endif %}>
+    <div class="hero-content">
+        <p class="tagline"><i class="{{ track.icon }}"></i> {{ track.tagline|default:"Track" }}</p>
+        <h1>{{ track.title|upper }}</h1>
+        <p class="description">{{ track.short_description }}</p>
+        <div class="track-facts">
+            <span><i class="fa-regular fa-clock"></i> {{ track.duration }}</span>
+            <span><i class="fa-solid fa-signal"></i> {{ track.get_level_display }}</span>
+            <span><i class="fa-solid fa-video"></i> {{ track.mode }}</span>
+            <span><i class="fa-solid fa-certificate"></i> {{ track.certificate }}</span>
+        </div>
+        {% if application %}
+            <a href="{% url 'accounts:dashboard' %}" class="cta-btn">Applied: {{ application.get_status_display }}</a>
+        {% else %}
+            <a href="{% url 'core:apply_track' track.slug %}" class="cta-btn pulse-btn">Apply for this track</a>
+        {% endif %}
+    </div>
+</section>
+
+<section class="about reveal">
+    <h2>TRACK OVERVIEW</h2>
+    <div class="underline"></div>
+    <p>{{ track.overview|linebreaksbr }}</p>
+</section>
+
+{% if track.outcome_list %}
+<section class="benefits reveal">
+    <h2>WHAT YOU WILL LEARN</h2>
+    <div class="underline"></div>
+    <div class="benefits-grid">
+        {% for item in track.outcome_list %}
+        <div class="benefit-item">
+            <i class="fa-solid fa-circle-check"></i>
+            <div><p class="outcome-text">{{ item }}</p></div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+{% endif %}
+
+<section class="courses reveal" id="syllabus">
+    <h2>WEEK-BY-WEEK SYLLABUS</h2>
+    <div class="underline"></div>
+    <p class="instruction-text">Click any week to view its topics and deliverables.</p>
+
+    <div class="course-container">
+        {% for week in track.weeks.all %}
+        <div class="accordion-item{% if forloop.first %} active{% endif %}">
+            <button class="accordion-header">
+                <span><span class="week-badge">Week {{ week.week_number }}</span> {{ week.title }}</span>
+                <i class="fa-solid fa-chevron-down arrow"></i>
+            </button>
+            <div class="accordion-content">
+                <div class="content-inner">
+                    {% if week.summary %}<p class="week-summary">{{ week.summary }}</p>{% endif %}
+                    {% if week.topic_list %}
+                    <ul>
+                        {% for topic in week.topic_list %}
+                            <li>{{ topic }}</li>
+                        {% endfor %}
+                    </ul>
+                    {% elif not week.summary %}
+                    <p class="week-summary">{{ week.title }}</p>
+                    {% endif %}
+                    {% if week.deliverable %}
+                        <p class="week-deliverable"><i class="fa-solid fa-flag-checkered"></i> <strong>Deliverable:</strong> {{ week.deliverable }}</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% empty %}
+            <p class="instruction-text">The syllabus for this track is being finalised.</p>
+        {% endfor %}
+    </div>
+
+    {% if track.syllabus_image %}
+    <figure class="syllabus-figure scroll-reveal">
+        <a href="{{ track.syllabus_image.url }}" target="_blank" rel="noopener">
+            <img src="{{ track.syllabus_image.url }}" alt="{{ track.title }} syllabus">
+        </a>
+        <figcaption>{{ track.syllabus_image_caption|default:"Full syllabus. Click to view the full-size image." }}</figcaption>
+    </figure>
+    {% endif %}
+</section>
+
+{% if track.tool_list or track.prerequisite_list or track.career_path_list %}
+<section class="benefits reveal">
+    <h2>TOOLS, REQUIREMENTS & CAREERS</h2>
+    <div class="underline"></div>
+    <div class="info-columns">
+        {% if track.tool_list %}
+        <div class="info-card">
+            <h4><i class="fa-solid fa-toolbox"></i> Tools You'll Use</h4>
+            <div class="chip-list">
+                {% for tool in track.tool_list %}<span class="chip">{{ tool }}</span>{% endfor %}
+            </div>
+        </div>
+        {% endif %}
+        {% if track.prerequisite_list %}
+        <div class="info-card">
+            <h4><i class="fa-solid fa-list-check"></i> Prerequisites</h4>
+            <ul class="check-list">
+                {% for item in track.prerequisite_list %}<li>{{ item }}</li>{% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+        {% if track.career_path_list %}
+        <div class="info-card">
+            <h4><i class="fa-solid fa-briefcase"></i> Career Paths</h4>
+            <ul class="check-list">
+                {% for item in track.career_path_list %}<li>{{ item }}</li>{% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endif %}
+
+{% include "partials/faqs.html" with faqs=track.faqs.all faq_heading="TRACK FAQS" %}
+
+<section class="cta-band reveal">
+    <div class="special-offer">
+        <div class="badge">ADMISSIONS OPEN</div>
+        <p>Ready to start your {{ track.title }} journey? Applications take less than 5 minutes.</p>
+        {% if application %}
+            <a href="{% url 'accounts:dashboard' %}" class="cta-btn">View my application</a>
+        {% else %}
+            <a href="{% url 'core:apply_track' track.slug %}" class="cta-btn pulse-btn">Apply now</a>
+        {% endif %}
+    </div>
+</section>
+
+{% if other_tracks %}
+<section class="courses reveal">
+    <h2>EXPLORE OTHER TRACKS</h2>
+    <div class="underline"></div>
+    <div class="track-grid">
+        {% for track in other_tracks %}
+            {% include "partials/track_card.html" %}
+        {% endfor %}
+    </div>
+</section>
+{% endif %}
+{% endblock %}

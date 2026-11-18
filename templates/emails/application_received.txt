@@ -1,0 +1,19 @@
+Hi {{ application.full_name }},
+
+Thank you for applying to the {{ application.track.title }} track at {{ academy.name }}!
+
+We have received your application and it is now under review.
+If you are shortlisted, you will be contacted by our admissions team using this email address or the phone number you provided ({{ application.phone }}).
+
+Application summary
+- Track: {{ application.track.title }} ({{ application.track.duration }})
+- Submitted: {{ application.created_at|date:"F j, Y, g:i a" }}
+- Status: {{ application.get_status_display }}
+{% if dashboard_url %}
+Track your application: {{ dashboard_url }}
+Review the syllabus: {{ track_url }}
+{% endif %}
+Knowledge Today, Global Excellence Forever.
+
+- The {{ academy.name }} Admissions Team
+{{ academy.email }}

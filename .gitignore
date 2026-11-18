@@ -1,0 +1,13 @@
+venv/
+__pycache__/
+*.pyc
+.env
+db.sqlite3
+staticfiles/
+media/tracks/
+env/
+.venv/
+media/avatars/
+*.sqlite3
+.claude/settings.local.json
+media/

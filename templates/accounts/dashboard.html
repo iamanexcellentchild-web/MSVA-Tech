@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block title %}My Dashboard | {{ academy.name }}{% endblock %}
+
+{% block content %}
+<section class="benefits">
+    <div class="dash-profile">
+        <div class="founder-avatar dash-avatar">
+            {% if avatar_url %}
+                <img src="{{ avatar_url }}" alt="{{ user.get_full_name }}" class="founder-img" referrerpolicy="no-referrer">
+            {% else %}
+                <span class="avatar-initial">{{ user.first_name|default:user.email|first|upper }}</span>
+            {% endif %}
+        </div>
+        <div>
+            <p class="tagline">Student Dashboard</p>
+            <h2 class="dash-name">{{ user.get_full_name|default:user.email }}</h2>
+            <p class="dash-email"><i class="fa-solid fa-envelope"></i> {{ user.email }}
+                &nbsp;·&nbsp; <i class="fa-regular fa-calendar"></i> Joined {{ user.date_joined|date:"M j, Y" }}</p>
+        </div>
+    </div>
+</section>
+
+<section class="courses">
+    <h2>MY COURSES</h2>
+    <div class="underline"></div>
+
+    {% if applications %}
+    <div class="dash-grid">
+        {% for app in applications %}
+        <div class="dash-card">
+            <div class="dash-card-head">
+                <h3><i class="{{ app.track.icon }} track-icon"></i>{{ app.track.title }}</h3>
+                <span class="status-pill status-{{ app.status }}">{{ app.get_status_display }}</span>
+            </div>
+            <ul class="dash-facts">
+                <li><i class="fa-regular fa-calendar-check"></i> Applied {{ app.created_at|date:"M j, Y" }}</li>
+                <li><i class="fa-regular fa-clock"></i> {{ app.track.duration }} · {{ app.track.get_level_display }}</li>
+                <li><i class="fa-solid fa-video"></i> {{ app.track.mode }}</li>
+                <li><i class="fa-solid fa-certificate"></i> {{ app.track.certificate }}</li>
+            </ul>
+            <p class="dash-next">
+                <strong>Next step:</strong>
+                {% if app.status == "submitted" %}Your application is under review. If you are shortlisted, you will be contacted.
+                {% elif app.status == "shortlisted" %}You've been shortlisted! Watch your email and phone for next steps from our team.
+                {% elif app.status == "accepted" %}Welcome aboard! Check your email for class schedules and onboarding links.
+                {% else %}You weren't selected for this cohort, but you're welcome to apply for the next one.{% endif %}
+            </p>
+            <a href="{{ app.track.get_absolute_url }}#syllabus" class="track-link">View syllabus <i class="fa-solid fa-arrow-right"></i></a>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="special-offer">
+        <div class="badge">NO APPLICATIONS YET</div>
+        <p>You haven't applied for a track yet. Pick one and apply in under 5 minutes.</p>
+        <a href="{% url 'core:apply' %}" class="cta-btn pulse-btn">Apply now</a>
+    </div>
+    {% endif %}
+</section>
+
+{% if suggested_tracks %}
+<section class="courses">
+    <h2>EXPLORE MORE TRACKS</h2>
+    <div class="underline"></div>
+    <div class="track-grid">
+        {% for track in suggested_tracks %}
+            {% include "partials/track_card.html" %}
+        {% endfor %}
+    </div>
+</section>
+{% endif %}
+{% endblock %}

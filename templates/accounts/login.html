@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %}Sign in | {{ academy.name }}{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <div class="auth-card scroll-reveal">
+        <h2>WELCOME BACK</h2>
+        <div class="underline"></div>
+        <p class="auth-sub">Sign in to apply for a track and follow your progress.</p>
+
+        <form method="post" class="auth-form" novalidate>
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ next }}">
+            {% if form.non_field_errors %}<div class="flash flash-error"><i class="fa-solid fa-circle-exclamation"></i><span>{{ form.non_field_errors|join:" " }}</span></div>{% endif %}
+            {% include "partials/form_field.html" with field=form.email %}
+            {% include "partials/form_field.html" with field=form.password %}
+            <button type="submit" class="cta-btn auth-submit">Sign in</button>
+        </form>
+
+        {% include "partials/google_button.html" %}
+
+        <p class="auth-switch">New here? <a href="{% url 'accounts:signup' %}?next={{ next|urlencode }}">Create an account</a></p>
+    </div>
+</section>
+{% endblock %}

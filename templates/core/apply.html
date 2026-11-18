@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}Apply | {{ academy.name }}{% endblock %}
+
+{% block content %}
+{% if track %}
+    {% include "partials/page_hero.html" with eyebrow="Admissions" heading="APPLICATION FORM" subheading="Applying for the "|add:track.title|add:" track. Shortlisted applicants will be contacted by our admissions team." %}
+{% else %}
+    {% include "partials/page_hero.html" with eyebrow="Admissions" heading="APPLICATION FORM" subheading="Tell us about yourself. Shortlisted applicants will be contacted by our admissions team." %}
+{% endif %}
+
+<section class="benefits">
+    <div class="form-card form-card--narrow google-form-card">
+        <iframe id="apply-form" class="google-form-frame" src="{{ academy.apply_form_embed_url }}"
+                title="Application form" loading="eager">Loading…</iframe>
+        <p class="google-form-fallback">
+            Form not loading? <a href="{{ academy.apply_url }}" target="_blank" rel="noopener">Open it in a new tab</a>.
+        </p>
+    </div>
+</section>
+
+<script>
+    // The Google Form is one page: the iframe loads once for the form and again after Submit.
+    (function () {
+        var loads = 0;
+        document.getElementById("apply-form").addEventListener("load", function () {
+            loads += 1;
+            if (loads > 1) window.location.href = "{% url 'core:apply_thanks' %}";
+        });
+    })();
+</script>
+{% endblock %}

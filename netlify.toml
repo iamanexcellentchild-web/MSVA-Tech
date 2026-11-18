@@ -1,0 +1,11 @@
+# Netlify only forwards traffic to the Django app on Render; it doesn't build anything.
+# Replace msva.onrender.com with your Render URL.
+[build]
+  publish = "netlify"
+  command = "echo 'Proxy only: Django runs on Render'"
+
+[[redirects]]
+  from = "/*"
+  to = "https://msva.onrender.com/:splat"
+  status = 200
+  force = true

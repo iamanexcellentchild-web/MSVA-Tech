@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %}Thank You | {{ academy.name }}{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <div class="hero-content thanks-content">
+        <div class="thanks-icon"><i class="fa-solid fa-circle-check"></i></div>
+        <h1>THANK YOU FOR <br><span class="gold-text">APPLYING!</span></h1>
+        {% if track %}<p class="tagline">{{ track.title }} Track</p>{% endif %}
+        <p class="description">
+            Thanks for filling the form{% if user.is_authenticated and user.first_name %}, {{ user.first_name }}{% endif %}.
+            Your application has been received and is now under review.
+            <strong>If you are shortlisted, you will be contacted</strong> by our admissions team.
+        </p>
+        <div class="hero-actions">
+            <a href="{% url 'core:home' %}" class="cta-btn pulse-btn">Back to home</a>
+            {% if track %}
+                <a href="{{ track.get_absolute_url }}" class="cta-btn cta-btn--outline">Review the syllabus</a>
+            {% else %}
+                <a href="{% url 'core:track_list' %}" class="cta-btn cta-btn--outline">Explore the tracks</a>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block title %}My Profile | {{ academy.name }}{% endblock %}
+
+{% block content %}
+<section class="benefits">
+    <div class="dash-profile">
+        <div class="founder-avatar dash-avatar">
+            {% if avatar_url %}
+                <img src="{{ avatar_url }}" alt="{{ user.get_full_name }}" class="founder-img" referrerpolicy="no-referrer">
+            {% else %}
+                <span class="avatar-initial">{{ user.first_name|default:user.email|first|upper }}</span>
+            {% endif %}
+        </div>
+        <div>
+            <p class="tagline">My Profile</p>
+            <h2 class="dash-name">{{ user.get_full_name|default:user.email }}</h2>
+            <p class="dash-email"><i class="fa-solid fa-envelope"></i> {{ user.email }}
+                {% if google_linked %}&nbsp;&middot;&nbsp; <i class="fa-brands fa-google"></i> Google linked{% endif %}</p>
+        </div>
+    </div>
+</section>
+
+<section class="courses">
+    <div class="form-card form-card--narrow">
+        <h3 class="form-section-title"><i class="fa-solid fa-user"></i> Personal details</h3>
+        <form method="post" enctype="multipart/form-data" novalidate>
+            {% csrf_token %}
+            <input type="hidden" name="action" value="details">
+            <div class="form-grid">
+                {% include "partials/form_field.html" with field=details_form.first_name %}
+                {% include "partials/form_field.html" with field=details_form.last_name %}
+                <div class="form-field">
+                    <label>Email</label>
+                    <input type="email" value="{{ user.email }}" disabled>
+                </div>
+                {% include "partials/form_field.html" with field=profile_form.phone %}
+                {% include "partials/form_field.html" with field=profile_form.country %}
+                {% include "partials/form_field.html" with field=profile_form.city %}
+                {% include "partials/form_field.html" with field=profile_form.photo wide=True %}
+                {% include "partials/form_field.html" with field=profile_form.bio wide=True %}
+            </div>
+            <button type="submit" class="cta-btn">Save changes</button>
+        </form>
+    </div>
+</section>
+
+<section class="courses">
+    <div class="form-card form-card--narrow">
+        <h3 class="form-section-title"><i class="fa-solid fa-lock"></i> {% if has_password %}Change password{% else %}Set a password{% endif %}</h3>
+        {% if not has_password %}
+            <p class="auth-sub">You signed up with Google. Set a password to also sign in with your email.</p>
+        {% endif %}
+        <form method="post" novalidate>
+            {% csrf_token %}
+            <input type="hidden" name="action" value="password">
+            {% if password_form.non_field_errors %}<div class="flash flash-error"><i class="fa-solid fa-circle-exclamation"></i><span>{{ password_form.non_field_errors|join:" " }}</span></div>{% endif %}
+            <div class="form-grid">
+                {% for field in password_form %}
+                    {% include "partials/form_field.html" with field=field wide=True %}
+                {% endfor %}
+            </div>
+            <button type="submit" class="cta-btn">{% if has_password %}Update password{% else %}Set password{% endif %}</button>
+        </form>
+    </div>
+</section>
+{% endblock %}

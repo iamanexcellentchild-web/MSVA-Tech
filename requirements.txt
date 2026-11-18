@@ -1,0 +1,15 @@
+Django>=5.2,<6.0
+djangorestframework>=3.15
+djangorestframework-simplejwt>=5.3
+google-auth>=2.30
+requests>=2.32
+Pillow>=10.0
+python-dotenv>=1.0
+# Production
+gunicorn>=22.0
+whitenoise>=6.7
+dj-database-url>=2.2
+psycopg[binary]>=3.2
+# Optional: photo uploads on Cloudinary (used when CLOUDINARY_URL is set)
+cloudinary>=1.40
+django-cloudinary-storage>=0.3

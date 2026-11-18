@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block title %}Our Team | {{ academy.name }}{% endblock %}
+
+{% block content %}
+{% include "partials/page_hero.html" with eyebrow="Leadership" heading="MEET THE TEAM" subheading="The people building a platform where lives are transformed through technology." %}
+
+{% for member in team %}
+    {% include "partials/team_member.html" %}
+{% endfor %}
+{% endblock %}

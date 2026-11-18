@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block title %}Contact | {{ academy.name }}{% endblock %}
+
+{% block content %}
+{% include "partials/page_hero.html" with eyebrow="Get in touch" heading="CONTACT US" subheading="Questions about tracks, admissions or partnerships? Send us a message." %}
+
+<section class="benefits reveal">
+    <div class="contact-layout">
+        <div class="form-card">
+            <h3>Send us a message</h3>
+            <form method="post" novalidate>
+                {% csrf_token %}
+                <div class="form-grid">
+                    {% include "partials/form_field.html" with field=form.name %}
+                    {% include "partials/form_field.html" with field=form.email %}
+                    {% include "partials/form_field.html" with field=form.subject wide=True %}
+                    {% include "partials/form_field.html" with field=form.message wide=True %}
+                </div>
+                <button type="submit" class="cta-btn">Send message <i class="fa-solid fa-paper-plane"></i></button>
+            </form>
+        </div>
+
+        <div class="contact-info">
+            <div class="benefit-item">
+                <i class="fa-solid fa-envelope"></i>
+                <div>
+                    <h4>Email</h4>
+                    <p><a href="mailto:{{ academy.email }}">{{ academy.email_display }}</a></p>
+                </div>
+            </div>
+            <div class="benefit-item">
+                <i class="fa-solid fa-graduation-cap"></i>
+                <div>
+                    <h4>Admissions</h4>
+                    <p>Ready to join? <a href="{% url 'core:apply' %}">Apply online</a> in under 5 minutes.</p>
+                </div>
+            </div>
+            <div class="benefit-item">
+                <i class="fa-solid fa-share-nodes"></i>
+                <div>
+                    <h4>Follow us</h4>
+                    <div class="social-links social-links--left">
+                        {% for s in academy.socials %}
+                            <a href="{{ s.url }}" aria-label="{{ s.label }}" target="_blank" rel="noopener"><i class="{{ s.icon }}"></i></a>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% include "partials/faqs.html" %}
+{% endblock %}

@@ -1,0 +1,18 @@
+<!-- STATS / IMPACT SECTION WITH COUNTERS -->
+<section class="stats-section reveal" id="stats">
+    <h2>OUR GLOBAL IMPACT</h2>
+    <div class="underline"></div>
+    <div class="stats-grid">
+        {% for stat in stats %}
+        <div class="stat-card">
+            <i class="{{ stat.icon }} stat-icon"></i>
+            <h3 class="stat-number" data-target="{{ stat.value }}" data-suffix="{{ stat.suffix }}">0</h3>
+            <p>{{ stat.label }}</p>
+        </div>
+        {% endfor %}
+    </div>
+    <div class="endorsement-banner">
+        <i class="fa-solid fa-award"></i>
+        <span>Active media recognition and endorsement</span>
+    </div>
+</section>

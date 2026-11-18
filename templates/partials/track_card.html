@@ -1,0 +1,16 @@
+<a href="{{ track.get_absolute_url }}" class="track-card">
+    {% if track.cover_image %}
+        <div class="track-card-media"><img src="{{ track.cover_image.url }}" alt="{{ track.title }}"></div>
+    {% else %}
+        <div class="track-card-media track-card-media--icon"><i class="{{ track.icon }}"></i></div>
+    {% endif %}
+    <div class="track-card-body">
+        <h3><i class="{{ track.icon }} track-icon"></i>{{ track.title }}</h3>
+        <p>{{ track.short_description }}</p>
+        <div class="track-meta">
+            <span><i class="fa-regular fa-clock"></i> {{ track.duration }}</span>
+            <span><i class="fa-solid fa-signal"></i> {{ track.get_level_display }}</span>
+        </div>
+        <span class="track-link">View syllabus <i class="fa-solid fa-arrow-right"></i></span>
+    </div>
+</a>

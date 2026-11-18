@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}About | {{ academy.name }}{% endblock %}
+
+{% block content %}
+{% include "partials/page_hero.html" with eyebrow="Who we are" heading="ABOUT THE ACADEMY" subheading="Built to eliminate technological skill gaps across Africa and the world." %}
+
+<section class="about reveal">
+    <h2>OUR STORY</h2>
+    <div class="underline"></div>
+    <p>
+        MS. Virtual Academy is an elite global training academy built to eliminate technological skill gaps.
+        We provide fast-tracked, highly practical beginners and advanced training modules designed to take ambitious
+        minds from foundational principles to career-ready global compliance.
+    </p>
+</section>
+
+<section class="benefits reveal">
+    <h2>MISSION, VISION & VALUES</h2>
+    <div class="underline"></div>
+    <div class="benefits-grid">
+        <div class="benefit-item">
+            <i class="fa-solid fa-bullseye"></i>
+            <div>
+                <h4>Our Mission</h4>
+                <p>To lower the barriers to high-tier technical mastery with training that is practical, modern and globally validated.</p>
+            </div>
+        </div>
+        <div class="benefit-item">
+            <i class="fa-solid fa-eye"></i>
+            <div>
+                <h4>Our Vision</h4>
+                <p>To empower 100,000+ individuals across Africa with real-world tech skills that drive career breakthroughs.</p>
+            </div>
+        </div>
+        <div class="benefit-item">
+            <i class="fa-solid fa-gem"></i>
+            <div>
+                <h4>Our Values</h4>
+                <p>Excellence, practicality, accessibility and community, in every class and every cohort.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="benefits reveal">
+    <h2>HOW IT WORKS</h2>
+    <div class="underline"></div>
+    <div class="steps-grid">
+        <div class="step-card"><span class="step-num">1</span><h4>Choose a Track</h4><p>Explore our tracks and review each week-by-week syllabus.</p></div>
+        <div class="step-card"><span class="step-num">2</span><h4>Sign in & Apply</h4><p>Sign in with Google and complete the short application form.</p></div>
+        <div class="step-card"><span class="step-num">3</span><h4>Get Shortlisted</h4><p>Our admissions team reviews applications and contacts shortlisted applicants.</p></div>
+        <div class="step-card"><span class="step-num">4</span><h4>Learn & Get Certified</h4><p>Attend live sessions, build projects and earn your certificate.</p></div>
+    </div>
+</section>
+
+{% include "partials/stats.html" %}
+
+{% for member in team %}
+    {% include "partials/team_member.html" %}
+{% endfor %}
+
+{% include "partials/faqs.html" %}
+{% endblock %}

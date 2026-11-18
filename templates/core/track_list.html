@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block title %}Tracks | {{ academy.name }}{% endblock %}
+
+{% block content %}
+{% include "partials/page_hero.html" with eyebrow="Our cohorts" heading="CHOOSE YOUR TRACK" subheading="Intensive, project-based tracks taught live by industry practitioners. Open any track to see its full syllabus." %}
+
+<section class="courses reveal">
+    <h2>ALL TRACKS</h2>
+    <div class="underline"></div>
+    <div class="track-grid">
+        {% for track in tracks %}
+            {% include "partials/track_card.html" %}
+        {% empty %}
+            <p class="instruction-text">New tracks are coming soon.</p>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

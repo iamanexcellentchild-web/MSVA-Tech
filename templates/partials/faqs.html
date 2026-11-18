@@ -1,0 +1,21 @@
+{% if faqs %}
+<section class="courses reveal">
+    <h2>{{ faq_heading|default:"FREQUENTLY ASKED QUESTIONS" }}</h2>
+    <div class="underline"></div>
+    <div class="course-container">
+        {% for faq in faqs %}
+        <div class="accordion-item">
+            <button class="accordion-header">
+                <span><i class="fa-solid fa-circle-question track-icon"></i> {{ faq.question }}</span>
+                <i class="fa-solid fa-chevron-down arrow"></i>
+            </button>
+            <div class="accordion-content">
+                <div class="content-inner">
+                    <p class="faq-answer">{{ faq.answer|linebreaksbr }}</p>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+{% endif %}

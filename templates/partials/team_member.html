@@ -1,0 +1,19 @@
+{% load static %}
+<section class="founder">
+    <h2>{{ member.role_heading }}</h2>
+    <div class="underline"></div>
+    <div class="founder-card scroll-reveal">
+        <div class="founder-avatar">
+            {% if member.photo %}
+                <img src="{{ member.photo.url }}" alt="{{ member.name }}" class="founder-img">
+            {% else %}
+                <img src="{% static 'images/logo-placeholder.svg' %}" alt="{{ member.name }}" class="founder-img">
+            {% endif %}
+        </div>
+        <div class="founder-details">
+            <h3>{{ member.name }}</h3>
+            <p class="founder-title">{{ member.title }}</p>
+            <p class="founder-bio">{{ member.bio }}</p>
+        </div>
+    </div>
+</section>

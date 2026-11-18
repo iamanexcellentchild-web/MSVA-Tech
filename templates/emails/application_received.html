@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<body style="margin:0;padding:0;background:#f9f9f9;font-family:'Segoe UI',Arial,sans-serif;color:#111111;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f9f9f9;padding:30px 12px;">
+  <tr><td align="center">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;background:#ffffff;border:1px solid #e2e8f0;border-radius:12px;overflow:hidden;">
+      <tr>
+        <td style="padding:24px 30px;border-bottom:3px solid #d4af37;">
+          <span style="font-weight:900;font-size:20px;letter-spacing:2px;color:#000000;">MS. VIRTUAL ACADEMY</span>
+        </td>
+      </tr>
+      <tr>
+        <td style="padding:30px;">
+          <h1 style="margin:0 0 6px 0;font-size:24px;color:#000000;">Thank you for applying!</h1>
+          <p style="margin:0 0 20px 0;color:#aa7c11;font-weight:700;text-transform:uppercase;letter-spacing:1px;font-size:13px;">{{ application.track.title }} Track</p>
+          <p style="margin:0 0 14px 0;line-height:1.6;">Hi {{ application.full_name }},</p>
+          <p style="margin:0 0 14px 0;line-height:1.6;">
+            We have received your application and it is now under review.
+            <strong>If you are shortlisted, you will be contacted</strong> by our admissions team using this
+            email address or the phone number you provided ({{ application.phone }}).
+          </p>
+
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f9f9f9;border:1px dashed #d4af37;border-radius:8px;margin:20px 0;">
+            <tr><td style="padding:16px 20px;font-size:14px;line-height:1.9;">
+              <strong>Track:</strong> {{ application.track.title }} ({{ application.track.duration }})<br>
+              <strong>Submitted:</strong> {{ application.created_at|date:"F j, Y, g:i a" }}<br>
+              <strong>Status:</strong> {{ application.get_status_display }}
+            </td></tr>
+          </table>
+
+          {% if dashboard_url %}
+          <p style="text-align:center;margin:28px 0;">
+            <a href="{{ dashboard_url }}" style="display:inline-block;background:#d4af37;background:linear-gradient(135deg,#d4af37,#aa7c11);color:#ffffff;text-decoration:none;font-weight:700;padding:13px 32px;border-radius:30px;">Track my application</a>
+          </p>
+          <p style="margin:0;font-size:14px;text-align:center;"><a href="{{ track_url }}" style="color:#aa7c11;font-weight:600;">Review the {{ application.track.title }} syllabus</a></p>
+          {% endif %}
+        </td>
+      </tr>
+      <tr>
+        <td style="padding:20px 30px;background:#f9f9f9;border-top:1px solid #e2e8f0;font-size:12px;color:#555555;text-align:center;">
+          Knowledge Today, Global Excellence Forever.<br>
+          Questions? Reply to this email or write to <a href="mailto:{{ academy.email }}" style="color:#aa7c11;">{{ academy.email }}</a>
+        </td>
+      </tr>
+    </table>
+  </td></tr>
+</table>
+</body>
+</html>

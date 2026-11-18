@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}Benefits | {{ academy.name }}{% endblock %}
+
+{% block content %}
+{% include "partials/page_hero.html" with eyebrow="Why join us" heading="WHAT YOU'LL BE GETTING" subheading="Everything you need to learn fast, build a portfolio and launch a global tech career." %}
+
+<section class="benefits reveal" id="benefits">
+    <h2>WHAT YOU'LL BE GETTING @ MS VIRTUAL ACADEMY</h2>
+    <div class="underline"></div>
+
+    <div class="benefits-grid">
+        {% for b in benefits %}
+        <div class="benefit-item">
+            <i class="{{ b.icon }}"></i>
+            <div>
+                <h4>{{ b.title }}</h4>
+                <p>{{ b.description }}</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="special-offer">
+        <div class="badge">NEW OFFER - COMING SOON</div>
+        <p>5 outstanding applicants will be offered stipends to ease and aid their learning upon enrollment.</p>
+    </div>
+
+    <div class="section-cta">
+        <a href="{% url 'core:apply' %}" class="cta-btn pulse-btn">Apply now</a>
+    </div>
+</section>
+{% endblock %}
