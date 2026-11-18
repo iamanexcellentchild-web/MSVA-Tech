@@ -24,9 +24,4 @@ services:
         sync: false
       - key: CLOUDINARY_URL
         sync: false
-      - key: GOOGLE_OAUTH_CLIENT_ID
-        sync: false
-      - key: GOOGLE_OAUTH_CLIENT_SECRET
-        sync: false
-      - key: GOOGLE_OAUTH_REDIRECT_URI
-        sync: false
+      # Google sign-in is optional: add GOOGLE_OAUTH_CLIENT_ID / _SECRET / _REDIRECT_URI later to show the button.
