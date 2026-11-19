@@ -257,3 +257,52 @@ class HealthzTests(TestCase):
         resp = self.client.get("/healthz/", HTTP_HOST="10.0.0.5:10000")
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(resp.content, b"ok")
+
+
+@override_settings(MEDIA_ROOT=TEST_MEDIA)
+class AdvisorTests(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        call_command("seed_academy", verbosity=0)
+
+    def ask(self, **payload):
+        return self.client.post("/api/advisor/", payload, content_type="application/json")
+
+    def test_security_lover_gets_cybersecurity_first(self):
+        resp = self.ask(interests=["protect", "logic"], goal="job", experience="some",
+                        about="I want to become an ethical hacker and protect networks")
+        self.assertEqual(resp.status_code, 200)
+        recs = resp.json()["recommendations"]
+        self.assertEqual(recs[0]["slug"], "cybersecurity")
+        self.assertEqual(recs[0]["match"], 100)
+        self.assertTrue(any("ethical" in r or "hacker" in r for r in recs[0]["reasons"]))
+        self.assertLessEqual(len(recs), 3)
+
+    def test_creative_freelancer_gets_design(self):
+        recs = self.ask(interests=["design"], goal="freelance", experience="none",
+                        about="I love drawing and want to design logos for small businesses").json()["recommendations"]
+        self.assertEqual(recs[0]["slug"], "graphics-design")
+
+    def test_phone_only_marketer_gets_digital_marketing(self):
+        recs = self.ask(interests=["marketing"], goal="business", laptop=False).json()["recommendations"]
+        self.assertEqual(recs[0]["slug"], "digital-marketing")
+        self.assertTrue(any("smartphone" in r for r in recs[0]["reasons"]))
+
+    def test_free_text_alone_works_and_bad_input_is_ignored(self):
+        recs = self.ask(interests=["nonsense"], goal="??", about="excel spreadsheets and dashboards").json()["recommendations"]
+        self.assertEqual(recs[0]["slug"], "data-analysis")
+
+    def test_unpublished_tracks_are_never_recommended(self):
+        Track.objects.filter(slug="cybersecurity").update(is_published=False)
+        recs = self.ask(interests=["protect"], about="hacking").json()["recommendations"]
+        self.assertNotIn("cybersecurity", [r["slug"] for r in recs])
+
+    def test_home_page_has_logo_and_advisor(self):
+        resp = self.client.get("/")
+        self.assertContains(resp, "images/logo-256")
+        self.assertContains(resp, 'id="advisorPanel"')
+        self.assertContains(resp, "data-open-advisor")
+
+    def test_track_page_lists_every_other_track(self):
+        resp = self.client.get(Track.objects.get(slug="cybersecurity").get_absolute_url())
+        self.assertEqual(resp.content.decode().count('class="track-mini"'), Track.objects.count() - 1)

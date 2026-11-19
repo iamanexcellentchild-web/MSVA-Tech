@@ -16,7 +16,7 @@ def home(request):
     return render(request, "core/home.html", {
         "stats": Stat.objects.all(),
         "tracks": tracks,
-        "typing_words": [f"{t.title} Experts." for t in tracks[:4]] + ["Tech Professionals."],
+        "typing_words": [f"{t.title} Experts." for t in tracks] + ["Tech Professionals."],
     })
 
 
@@ -48,7 +48,7 @@ def track_detail(request, slug):
     return render(request, "core/track_detail.html", {
         "track": track,
         "application": application,
-        "other_tracks": _published_tracks().exclude(pk=track.pk)[:3],
+        "other_tracks": _published_tracks().exclude(pk=track.pk),
     })
 
 

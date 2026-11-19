@@ -1,0 +1,20 @@
+{% load static %}
+<button type="button" class="advisor-launcher" id="advisorLauncher" aria-controls="advisorPanel" aria-expanded="false">
+    <img src="{% static 'images/logo-256.png' %}" alt="" width="40" height="40">
+    <span>Find my course</span>
+</button>
+
+<div class="advisor-panel" id="advisorPanel" role="dialog" aria-modal="false" aria-labelledby="advisorTitle" hidden
+     data-endpoint="{% url 'api_advisor' %}">
+    <div class="advisor-head">
+        <img src="{% static 'images/logo-256.png' %}" alt="{{ academy.name }} logo" class="advisor-avatar" width="40" height="40">
+        <div>
+            <strong id="advisorTitle">Course Advisor</strong>
+            <span>Personalised advice in 1 minute</span>
+        </div>
+        <button type="button" class="advisor-close" id="advisorClose" aria-label="Close advisor">&times;</button>
+    </div>
+    <div class="advisor-body" id="advisorBody" aria-live="polite"></div>
+    <div class="advisor-input" id="advisorInput"></div>
+</div>
+<script src="{% static 'js/advisor.js' %}" defer></script>

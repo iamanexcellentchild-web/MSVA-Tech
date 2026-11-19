@@ -140,9 +140,15 @@
 <section class="courses reveal">
     <h2>EXPLORE OTHER TRACKS</h2>
     <div class="underline"></div>
-    <div class="track-grid">
+    <div class="track-mini-grid">
         {% for track in other_tracks %}
-            {% include "partials/track_card.html" %}
+        <a href="{{ track.get_absolute_url }}" class="track-mini">
+            <i class="{{ track.icon }}"></i>
+            <div>
+                <h4>{{ track.title }}</h4>
+                <p>{{ track.tagline|default:track.short_description|truncatewords:12 }}</p>
+            </div>
+        </a>
         {% endfor %}
     </div>
 </section>

@@ -142,6 +142,7 @@ REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.IsAuthenticatedOrReadOnly",
     ],
+    "DEFAULT_THROTTLE_RATES": {"advisor": "30/min"},
 }
 
 SIMPLE_JWT = {

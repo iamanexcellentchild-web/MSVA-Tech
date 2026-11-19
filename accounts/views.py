@@ -127,7 +127,7 @@ def dashboard(request):
     return render(request, "accounts/dashboard.html", {
         "applications": applications,
         "avatar_url": profile.avatar if profile else "",
-        "suggested_tracks": Track.objects.filter(is_published=True).exclude(pk__in=applied_ids)[:3],
+        "suggested_tracks": Track.objects.filter(is_published=True).exclude(pk__in=applied_ids),
     })
 
 

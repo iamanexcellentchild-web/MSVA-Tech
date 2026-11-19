@@ -6,6 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}{{ academy.name }} | Global Digital Skills{% endblock %}</title>
     <meta name="description" content="{% block meta_description %}Fast-tracked, practical tech training with globally recognized certifications.{% endblock %}">
+    <link rel="icon" type="image/png" href="{% static 'images/favicon.png' %}">
+    <link rel="apple-touch-icon" href="{% static 'images/apple-touch-icon.png' %}">
+    <meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{% static 'images/logo-256.png' %}">
+    <meta name="theme-color" content="#111111">
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -19,7 +23,10 @@
 
     {% with url_name=request.resolver_match.url_name %}
     <header>
-        <a href="{% url 'core:home' %}" class="logo">MS. VIRTUAL ACADEMY</a>
+        <a href="{% url 'core:home' %}" class="logo">
+            <img src="{% static 'images/logo-256.png' %}" alt="" class="logo-img" width="44" height="44">
+            <span>MS. VIRTUAL ACADEMY</span>
+        </a>
         <button class="menu-toggle" id="menuToggle" aria-label="Toggle Navigation">
             <i class="fa-solid fa-bars"></i>
         </button>
@@ -66,6 +73,7 @@
 
     {% block footer %}
     <footer id="contact">
+        <img src="{% static 'images/logo-256.png' %}" alt="{{ academy.name }} logo" class="footer-logo" width="84" height="84" loading="lazy">
         <h3>Join Our Upcoming International Cohort</h3>
         <p class="footer-sub">Admissions are processed securely through our global registry team.</p>
 

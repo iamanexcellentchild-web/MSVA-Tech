@@ -1,8 +1,10 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block content %}
 <section class="hero">
     <div class="hero-content">
+        <img src="{% static 'images/logo-256.png' %}" alt="{{ academy.name }} logo" class="hero-logo" width="128" height="128">
         <h1>WE TRAIN GLOBAL <br><span id="typing-text" data-words='{{ typing_words|join:"|" }}'></span><span class="cursor">|</span></h1>
         <p class="tagline">Knowledge Today, Global Excellence Forever.</p>
         <p class="description">
@@ -10,11 +12,13 @@
         </p>
         <div class="hero-actions">
             <a href="{% url 'core:apply' %}" class="cta-btn pulse-btn">Join the next cohort</a>
-            <a href="#how-it-works" class="cta-btn cta-btn--outline">See how it works</a>
+            <button type="button" class="cta-btn cta-btn--outline" data-open-advisor>
+                <i class="fa-solid fa-wand-magic-sparkles"></i> Find my course
+            </button>
         </div>
         {% if stats %}
         <div class="hero-stats">
-            {% for stat in stats|slice:":3" %}
+            {% for stat in stats %}
             <div class="hero-stat">
                 <strong class="stat-number" data-target="{{ stat.value }}" data-suffix="{{ stat.suffix }}">0</strong>
                 <span>{{ stat.label }}</span>
@@ -29,11 +33,26 @@
 <div class="track-ticker" aria-hidden="true">
     <div class="track-ticker-inner">
         {% for _ in "12" %}
+            <img src="{% static 'images/logo-256.png' %}" alt="" class="ticker-logo" width="28" height="28">
             {% for track in tracks %}<span><i class="{{ track.icon }}"></i> {{ track.title }}</span>{% endfor %}
         {% endfor %}
     </div>
 </div>
 {% endif %}
+
+<section class="advisor-cta reveal" id="advisor">
+    <div class="advisor-cta-card">
+        <img src="{% static 'images/logo-256.png' %}" alt="" class="advisor-cta-logo" width="96" height="96" loading="lazy">
+        <div class="advisor-cta-text">
+            <p class="tagline">Not sure where to start?</p>
+            <h2>GET PERSONALISED COURSE ADVICE</h2>
+            <p>Answer 5 quick questions and our course advisor will match you with the tracks that fit your interests, goals and experience. Free, and no sign-up needed.</p>
+            <button type="button" class="cta-btn pulse-btn" data-open-advisor>
+                <i class="fa-solid fa-comments"></i> Talk to the advisor
+            </button>
+        </div>
+    </div>
+</section>
 
 <section class="courses reveal" id="how-it-works">
     <h2>HOW IT WORKS</h2>
@@ -70,4 +89,5 @@
         </a>
     </div>
 </section>
+{% include "partials/advisor.html" %}
 {% endblock %}

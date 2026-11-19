@@ -19,6 +19,7 @@ api_patterns = [
     path("auth/token/refresh/", TokenRefreshView.as_view(), name="api_token_refresh"),
     path("auth/logout/", accounts_api.LogoutAPI.as_view(), name="api_logout"),
     path("auth/me/", accounts_api.MeAPI.as_view(), name="api_me"),
+    path("advisor/", core_api.CourseAdvisorAPI.as_view(), name="api_advisor"),
     path("tracks/", core_api.TrackListAPI.as_view(), name="api_tracks"),
     path("tracks/<slug:slug>/", core_api.TrackDetailAPI.as_view(), name="api_track_detail"),
     path("me/applications/", core_api.MyApplicationsAPI.as_view(), name="api_my_applications"),
