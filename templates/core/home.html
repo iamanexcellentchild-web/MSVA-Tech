@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load humanize %}
 {% load static %}
 
 {% block body_class %}page-home{% endblock %}
@@ -22,7 +23,7 @@
         <div class="hero-stats">
             {% for stat in stats %}
             <div class="hero-stat">
-                <strong class="stat-number" data-target="{{ stat.value }}" data-suffix="{{ stat.suffix }}">0</strong>
+                <strong class="stat-number" data-target="{{ stat.value }}" data-suffix="{{ stat.suffix }}">{{ stat.value|intcomma }}{{ stat.suffix }}</strong>
                 <span>{{ stat.label }}</span>
             </div>
             {% endfor %}

@@ -121,39 +121,35 @@ document.addEventListener('DOMContentLoaded', () => {
     checkRevealScroll();
 
     // 5. Scroll-Triggered Animated Counter Engine
-    const statNumbers = document.querySelectorAll('.stat-number');
-    let hasCounted = false;
+    // Stat counters: the real value is already in the HTML (so it shows even without JS).
+    // When a number scrolls into view it counts up from 0 to that value, once.
+    const statNumbers = document.querySelectorAll('.stat-number[data-target]');
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    function startCounters() {
-        const statsSection = document.getElementById('stats');
-        if (!statsSection || hasCounted) return;
-
-        const sectionTop = statsSection.getBoundingClientRect().top;
-        const triggerPoint = window.innerHeight * 0.85;
-
-        if (sectionTop < triggerPoint) {
-            hasCounted = true;
-            statNumbers.forEach(counter => {
-                const target = +counter.getAttribute('data-target');
-                const suffix = counter.getAttribute('data-suffix') || '';
-                const duration = 2000; // Animation duration in ms
-                const increment = target / (duration / 16); // ~60fps
-
-                let current = 0;
-                const updateCounter = () => {
-                    current += increment;
-                    if (current < target) {
-                        counter.textContent = Math.ceil(current).toLocaleString() + suffix;
-                        requestAnimationFrame(updateCounter);
-                    } else {
-                        counter.textContent = target.toLocaleString() + suffix;
-                    }
-                };
-                updateCounter();
-            });
-        }
+    function countUp(counter) {
+        const target = +counter.getAttribute('data-target');
+        const suffix = counter.getAttribute('data-suffix') || '';
+        if (!target || reduceMotion) return;
+        const duration = 1800;
+        const start = performance.now();
+        const tick = (now) => {
+            const progress = Math.min((now - start) / duration, 1);
+            const eased = 1 - Math.pow(1 - progress, 3);
+            counter.textContent = Math.round(target * eased).toLocaleString('en-US') + suffix;
+            if (progress < 1) requestAnimationFrame(tick);
+        };
+        requestAnimationFrame(tick);
     }
 
-    window.addEventListener('scroll', startCounters);
-    startCounters();
+    if ('IntersectionObserver' in window) {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    observer.unobserve(entry.target);
+                    countUp(entry.target);
+                }
+            });
+        }, { threshold: 0.4 });
+        statNumbers.forEach((counter) => observer.observe(counter));
+    }
 });

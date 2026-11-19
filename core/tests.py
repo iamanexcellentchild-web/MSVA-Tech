@@ -11,7 +11,7 @@ from django.urls import reverse
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from accounts.tokens import issue_tokens
-from core.models import Application, Track
+from core.models import Application, Stat, Track
 
 User = get_user_model()
 TEST_MEDIA = tempfile.mkdtemp(prefix="msva-test-media-")
@@ -312,3 +312,9 @@ class AdvisorTests(TestCase):
         self.assertContains(resp, "images/tracks/cybersecurity")
         recs = self.ask(interests=["data"]).json()["recommendations"]
         self.assertIn("images/tracks/", recs[0]["image"])
+
+    def test_home_stats_show_real_numbers_not_zero(self):
+        html = self.client.get("/").content.decode()
+        for stat in Stat.objects.all():
+            self.assertIn(f"{stat.value:,}{stat.suffix}", html)
+        self.assertNotIn(">0</strong>", html)
