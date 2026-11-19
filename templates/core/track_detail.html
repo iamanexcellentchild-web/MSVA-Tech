@@ -4,7 +4,7 @@
 {% block meta_description %}{{ track.short_description }}{% endblock %}
 
 {% block content %}
-<section class="page-hero track-hero"{% if track.cover_image %} style="--track-cover: url('{{ track.cover_image.url }}')"{% endif %}>
+<section class="page-hero track-hero"{% if track.image_url %} style="--track-cover: url('{{ track.image_url }}')"{% endif %}>
     <div class="hero-content">
         <p class="tagline"><i class="{{ track.icon }}"></i> {{ track.tagline|default:"Track" }}</p>
         <h1>{{ track.title|upper }}</h1>
@@ -143,7 +143,7 @@
     <div class="track-mini-grid">
         {% for track in other_tracks %}
         <a href="{{ track.get_absolute_url }}" class="track-mini">
-            <i class="{{ track.icon }}"></i>
+            {% if track.image_url %}<img src="{{ track.image_url }}" alt="" class="track-mini-img" loading="lazy">{% else %}<i class="{{ track.icon }}"></i>{% endif %}
             <div>
                 <h4>{{ track.title }}</h4>
                 <p>{{ track.tagline|default:track.short_description|truncatewords:12 }}</p>

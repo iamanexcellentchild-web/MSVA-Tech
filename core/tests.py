@@ -299,10 +299,16 @@ class AdvisorTests(TestCase):
 
     def test_home_page_has_logo_and_advisor(self):
         resp = self.client.get("/")
-        self.assertContains(resp, "images/logo-256")
+        self.assertContains(resp, "images/logo-mark")
         self.assertContains(resp, 'id="advisorPanel"')
         self.assertContains(resp, "data-open-advisor")
 
     def test_track_page_lists_every_other_track(self):
         resp = self.client.get(Track.objects.get(slug="cybersecurity").get_absolute_url())
         self.assertEqual(resp.content.decode().count('class="track-mini"'), Track.objects.count() - 1)
+
+    def test_track_photos_show_on_cards(self):
+        resp = self.client.get("/tracks/")
+        self.assertContains(resp, "images/tracks/cybersecurity")
+        recs = self.ask(interests=["data"]).json()["recommendations"]
+        self.assertIn("images/tracks/", recs[0]["image"])

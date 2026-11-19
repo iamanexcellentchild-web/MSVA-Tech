@@ -74,6 +74,16 @@ class Track(OrderedModel):
         return reverse("core:track_detail", kwargs={"slug": self.slug})
 
     @property
+    def image_url(self):
+        """Cover uploaded in the admin, else the bundled photo static/images/tracks/<slug>.jpg, else ''."""
+        if self.cover_image:
+            return self.cover_image.url
+        if (settings.BASE_DIR / "static" / "images" / "tracks" / f"{self.slug}.jpg").exists():
+            from django.templatetags.static import static
+            return static(f"images/tracks/{self.slug}.jpg")
+        return ""
+
+    @property
     def outcome_list(self):
         return _lines(self.outcomes)
 

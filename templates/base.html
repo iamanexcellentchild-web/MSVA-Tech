@@ -14,17 +14,18 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 
-<body>
+<body class="{% block body_class %}{% endblock %}">
     <div class="bg-animate">
         <div class="circle-bubble bubble-1"></div>
         <div class="circle-bubble bubble-2"></div>
         <div class="circle-bubble bubble-3"></div>
+        <img src="{% static 'images/logo-mark.png' %}" alt="" class="bg-logo">
     </div>
 
     {% with url_name=request.resolver_match.url_name %}
     <header>
         <a href="{% url 'core:home' %}" class="logo">
-            <img src="{% static 'images/logo-256.png' %}" alt="" class="logo-img" width="44" height="44">
+            <img src="{% static 'images/logo-mark-dark.png' %}" alt="" class="logo-img" width="44" height="44">
             <span>MS. VIRTUAL ACADEMY</span>
         </a>
         <button class="menu-toggle" id="menuToggle" aria-label="Toggle Navigation">
@@ -73,7 +74,7 @@
 
     {% block footer %}
     <footer id="contact">
-        <img src="{% static 'images/logo-256.png' %}" alt="{{ academy.name }} logo" class="footer-logo" width="84" height="84" loading="lazy">
+        <img src="{% static 'images/logo-mark-dark.png' %}" alt="{{ academy.name }} logo" class="footer-logo" width="84" height="84" loading="lazy">
         <h3>Join Our Upcoming International Cohort</h3>
         <p class="footer-sub">Admissions are processed securely through our global registry team.</p>
 

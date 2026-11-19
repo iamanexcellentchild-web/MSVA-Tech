@@ -66,7 +66,7 @@
     <div class="track-mini-grid">
         {% for track in suggested_tracks %}
         <a href="{{ track.get_absolute_url }}" class="track-mini">
-            <i class="{{ track.icon }}"></i>
+            {% if track.image_url %}<img src="{{ track.image_url }}" alt="" class="track-mini-img" loading="lazy">{% else %}<i class="{{ track.icon }}"></i>{% endif %}
             <div>
                 <h4>{{ track.title }}</h4>
                 <p>{{ track.tagline|default:track.short_description|truncatewords:12 }}</p>

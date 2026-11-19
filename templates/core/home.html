@@ -1,10 +1,12 @@
 {% extends "base.html" %}
 {% load static %}
 
+{% block body_class %}page-home{% endblock %}
+
 {% block content %}
 <section class="hero">
     <div class="hero-content">
-        <img src="{% static 'images/logo-256.png' %}" alt="{{ academy.name }} logo" class="hero-logo" width="128" height="128">
+        <img src="{% static 'images/logo-mark-dark.png' %}" alt="{{ academy.name }} logo" class="hero-logo" width="150" height="150">
         <h1>WE TRAIN GLOBAL <br><span id="typing-text" data-words='{{ typing_words|join:"|" }}'></span><span class="cursor">|</span></h1>
         <p class="tagline">Knowledge Today, Global Excellence Forever.</p>
         <p class="description">
@@ -33,7 +35,7 @@
 <div class="track-ticker" aria-hidden="true">
     <div class="track-ticker-inner">
         {% for _ in "12" %}
-            <img src="{% static 'images/logo-256.png' %}" alt="" class="ticker-logo" width="28" height="28">
+            <img src="{% static 'images/logo-mark-dark.png' %}" alt="" class="ticker-logo" width="30" height="30">
             {% for track in tracks %}<span><i class="{{ track.icon }}"></i> {{ track.title }}</span>{% endfor %}
         {% endfor %}
     </div>
@@ -42,7 +44,7 @@
 
 <section class="advisor-cta reveal" id="advisor">
     <div class="advisor-cta-card">
-        <img src="{% static 'images/logo-256.png' %}" alt="" class="advisor-cta-logo" width="96" height="96" loading="lazy">
+        <img src="{% static 'images/logo-mark.png' %}" alt="" class="advisor-cta-logo" width="110" height="110" loading="lazy">
         <div class="advisor-cta-text">
             <p class="tagline">Not sure where to start?</p>
             <h2>GET PERSONALISED COURSE ADVICE</h2>

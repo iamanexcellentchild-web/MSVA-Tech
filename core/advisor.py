@@ -182,6 +182,7 @@ def recommend(interests=None, goal=None, experience=None, laptop=True, about="",
         "match": max(40, round(100 * r["score"] / top)) if i else 100,
         "reasons": r["reasons"][:3],
         "url": r["track"].get_absolute_url(),
+        "image": r["track"].image_url,
     } for i, r in enumerate(results)]
 
 

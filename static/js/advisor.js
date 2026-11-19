@@ -168,6 +168,11 @@
             const view = document.createElement('a'); view.href = r.url; view.textContent = 'View syllabus';
             const apply = document.createElement('a'); apply.href = r.url + 'apply/'; apply.className = 'advisor-apply'; apply.textContent = 'Apply';
             links.append(view, apply);
+            if (r.image) {
+                const img = document.createElement('img');
+                img.src = r.image; img.alt = ''; img.className = 'advisor-result-img'; img.loading = 'lazy';
+                card.appendChild(img);
+            }
             card.append(head, meta, list, links);
             body.appendChild(card);
         });
