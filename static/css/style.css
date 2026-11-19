@@ -1576,3 +1576,6 @@ body.advisor-open .advisor-launcher { display: none; }
 }
 /* Let the background logo show through the hero areas */
 .hero, .page-hero:not([style*="--track-cover"]) { background: transparent; }
+/* Bolder background logo */
+.bg-logo { opacity: 0.1; width: min(78vw, 680px); }
+@media (max-width: 768px) { .bg-logo { width: 90vw; opacity: 0.09; } }
