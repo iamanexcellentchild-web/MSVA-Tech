@@ -6,6 +6,7 @@ Secrets and environment-specific values are read from a `.env` file
 """
 
 import os
+import sys
 from datetime import timedelta
 from pathlib import Path
 
@@ -14,6 +15,13 @@ from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(BASE_DIR / ".env")
+
+
+# `manage.py test` must never touch the live Neon database or Cloudinary, even if .env points at them.
+TESTING = len(sys.argv) > 1 and sys.argv[1] == "test"
+if TESTING:
+    os.environ.pop("DATABASE_URL", None)
+    os.environ.pop("CLOUDINARY_URL", None)
 
 
 def env_bool(name, default=False):
@@ -27,6 +35,9 @@ def env_list(name, default=""):
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "django-insecure-dev-only-change-me")
 DEBUG = env_bool("DJANGO_DEBUG", True)
 ALLOWED_HOSTS = env_list("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1")
+# Render sets this to the service's own address (e.g. msva.onrender.com).
+if os.getenv("RENDER_EXTERNAL_HOSTNAME"):
+    ALLOWED_HOSTS.append(os.getenv("RENDER_EXTERNAL_HOSTNAME"))
 CSRF_TRUSTED_ORIGINS = env_list("DJANGO_CSRF_TRUSTED_ORIGINS")
 
 INSTALLED_APPS = [
@@ -47,6 +58,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    "msva.health.HealthCheckMiddleware",  # must stay first
     "django.middleware.security.SecurityMiddleware",
     # Serves the collected static files in production (no separate web server needed).
     "whitenoise.middleware.WhiteNoiseMiddleware",

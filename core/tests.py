@@ -251,3 +251,9 @@ class HealthzTests(TestCase):
         with self.assertNumQueries(0):
             resp = self.client.get("/healthz/")
         self.assertEqual(resp.content, b"ok")
+
+    @override_settings(ALLOWED_HOSTS=["example.com"], SECURE_SSL_REDIRECT=True)
+    def test_healthz_ignores_unknown_host_and_https_redirect(self):
+        resp = self.client.get("/healthz/", HTTP_HOST="10.0.0.5:10000")
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.content, b"ok")
