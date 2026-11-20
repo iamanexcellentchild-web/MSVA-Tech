@@ -96,7 +96,8 @@
         </div>
 
         <p class="email-info">Inquiries: <a href="mailto:{{ academy.email }}">{{ academy.email_display }}</a></p>
-        <p class="legal-text">&copy; {% now "Y" %} {{ academy.name }}. All Rights Reserved.</p>
+        <p class="legal-text">&copy; {% now "Y" %} {{ academy.name }}. All Rights Reserved.
+            &middot; <a href="{% url 'core:terms' %}">Terms and Conditions</a></p>
     </footer>
     {% endblock %}
 

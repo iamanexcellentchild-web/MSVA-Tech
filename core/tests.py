@@ -69,6 +69,7 @@ class SiteTests(TestCase):
             "institution": "University of Lagos", "referral_source": "instagram",
             "past_student_choice": "no", "student_number": "", "track": self.track.pk,
             "motivation": "I want to become a SOC analyst.", "placement_choice": "yes",
+            "accept_terms": "on",
         }
         data.update(overrides)
         return data
@@ -120,6 +121,29 @@ class SiteTests(TestCase):
 
         self.client.post(reverse("core:apply"), self._application_data(past_student_choice="yes", student_number="MSVA-0042"))
         self.assertEqual(Application.objects.get().student_number, "MSVA-0042")
+
+    def test_terms_must_be_accepted_and_acceptance_is_recorded(self):
+        login_with_jwt(self.client, self.user)
+        form_page = self.client.get(reverse("core:apply"))
+        self.assertContains(form_page, f'href="{reverse("core:terms")}" target="_blank"')
+
+        data = self._application_data()
+        del data["accept_terms"]
+        resp = self.client.post(reverse("core:apply"), data)
+        self.assertContains(resp, "Please read and accept the Terms and Conditions")
+        self.assertFalse(Application.objects.exists())
+
+        self.client.post(reverse("core:apply"), self._application_data())
+        self.assertIsNotNone(Application.objects.get().terms_accepted_at)
+
+    def test_terms_page_is_public_and_linked_in_footer(self):
+        resp = self.client.get(reverse("core:terms"))
+        self.assertContains(resp, "TERMS AND CONDITIONS")
+        self.assertContains(resp, "Last updated")
+        for heading in ["1. Acceptance of Terms", "8. Scholarships", "12. Third-Party Links", "13. Contact Us"]:
+            self.assertContains(resp, heading)
+        self.assertContains(resp, "support@msvirtualacademy.com")
+        self.assertContains(self.client.get("/"), f'href="{reverse("core:terms")}"')
 
     def test_duplicate_application_rejected(self):
         login_with_jwt(self.client, self.user)

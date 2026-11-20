@@ -102,6 +102,10 @@ def contact(request):
     return render(request, "core/contact.html", {"form": form, "faqs": FAQ.objects.filter(track__isnull=True)})
 
 
+def terms(request):
+    return render(request, "core/terms.html")
+
+
 def csrf_failure(request, reason=""):
     """Friendly page for an expired or invalid form submission (instead of Django's plain 403)."""
     return render(request, "403_csrf.html", status=403)

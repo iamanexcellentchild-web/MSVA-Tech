@@ -223,6 +223,8 @@ class Application(models.Model):
     motivation = models.TextField(blank=True, verbose_name="Why did you choose this program?")
     needs_placement_support = models.BooleanField(
         default=False, verbose_name="Needs priority support for internship and job placement")
+    terms_accepted_at = models.DateTimeField(null=True, blank=True,
+                                             verbose_name="Accepted the Terms and Conditions at")
 
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="submitted")
     confirmation_email_sent = models.BooleanField(default=False)

@@ -92,14 +92,14 @@ class ApplicationAdmin(admin.ModelAdmin):
                    "past_student", "needs_placement_support", "country")
     list_editable = ("status",)
     search_fields = ("full_name", "first_name", "last_name", "email", "phone", "country", "city", "student_number")
-    readonly_fields = ("user", "full_name", "confirmation_email_sent", "created_at", "updated_at")
+    readonly_fields = ("user", "full_name", "confirmation_email_sent", "terms_accepted_at", "created_at", "updated_at")
     date_hierarchy = "created_at"
     fieldsets = (
         ("Program", {"fields": ("track", "status", "user", "created_at", "updated_at", "confirmation_email_sent")}),
         ("Applicant", {"fields": ("first_name", "last_name", "full_name", "email", "gender", "age_range",
                                   "phone", "country", "city")}),
         ("Education", {"fields": ("education_level", "institution", "past_student", "student_number")}),
-        ("Other", {"fields": ("referral_source", "motivation", "needs_placement_support")}),
+        ("Other", {"fields": ("referral_source", "motivation", "needs_placement_support", "terms_accepted_at")}),
     )
 
 

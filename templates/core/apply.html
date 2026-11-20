@@ -66,6 +66,16 @@
                 {% include "partials/radio_field.html" with field=form.placement_choice wide=True cols="2" %}
             </div>
 
+            <div class="form-field terms-field{% if form.accept_terms.errors %} has-error{% endif %}">
+                <label class="checkbox-label">
+                    {{ form.accept_terms }}
+                    <span>I have read and agree to the
+                        <a href="{% url 'core:terms' %}" target="_blank" rel="noopener">Terms and Conditions <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+                        <span class="req">*</span></span>
+                </label>
+                {% for error in form.accept_terms.errors %}<small class="field-error">{{ error }}</small>{% endfor %}
+            </div>
+
             <button type="submit" class="cta-btn pulse-btn apply-submit">Submit application <i class="fa-solid fa-paper-plane"></i></button>
             <p class="apply-fineprint">Your application is saved to your account. You can follow its status on your dashboard.</p>
         </form>

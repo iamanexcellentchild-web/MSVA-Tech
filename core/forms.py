@@ -1,4 +1,5 @@
 from django import forms
+from django.utils import timezone
 
 from .models import Application, ContactMessage, Track
 
@@ -29,6 +30,11 @@ class ApplicationForm(forms.ModelForm):
     placement_choice = forms.ChoiceField(
         choices=YES_NO, widget=forms.RadioSelect,
         label="Would you need priority support from MSVA towards internship and job placement?",
+    )
+    accept_terms = forms.BooleanField(
+        required=True,
+        label="I have read and agree to the Terms and Conditions",
+        error_messages={"required": "Please read and accept the Terms and Conditions to submit your application."},
     )
 
     class Meta:
@@ -97,6 +103,7 @@ class ApplicationForm(forms.ModelForm):
         application = super().save(commit=False)
         application.past_student = self.cleaned_data["past_student_choice"] == "yes"
         application.needs_placement_support = self.cleaned_data["placement_choice"] == "yes"
+        application.terms_accepted_at = timezone.now()
         if not application.past_student:
             application.student_number = ""
         if self.user is not None:
