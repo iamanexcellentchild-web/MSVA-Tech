@@ -7,19 +7,19 @@
     <div class="hero-content thanks-content">
         <div class="thanks-icon"><i class="fa-solid fa-circle-check"></i></div>
         <h1>THANK YOU FOR <br><span class="gold-text">APPLYING!</span></h1>
-        {% if track %}<p class="tagline">{{ track.title }} Track</p>{% endif %}
+        <p class="tagline">{{ application.track.title }}</p>
         <p class="description">
-            Thanks for filling the form{% if user.is_authenticated and user.first_name %}, {{ user.first_name }}{% endif %}.
-            Your application has been received and is now under review.
-            <strong>If you are shortlisted, you will be contacted</strong> by our admissions team.
+            Thanks for filling the form, {{ application.first_name|default:application.full_name }}. Your application has been
+            received and is now <strong>under review</strong>. If you are shortlisted, our admissions team will contact you.
+        </p>
+        <p class="description">
+            <i class="fa-solid fa-envelope"></i>
+            A confirmation email is on its way to <strong>{{ application.email }}</strong>.
+            Check your spam or promotions folder if you can't find it.
         </p>
         <div class="hero-actions">
-            <a href="{% url 'core:home' %}" class="cta-btn pulse-btn">Back to home</a>
-            {% if track %}
-                <a href="{{ track.get_absolute_url }}" class="cta-btn cta-btn--outline">Review the syllabus</a>
-            {% else %}
-                <a href="{% url 'core:track_list' %}" class="cta-btn cta-btn--outline">Explore the tracks</a>
-            {% endif %}
+            <a href="{% url 'accounts:dashboard' %}" class="cta-btn pulse-btn">Track my application</a>
+            <a href="{{ application.track.get_absolute_url }}" class="cta-btn cta-btn--outline">Review the syllabus</a>
         </div>
     </div>
 </section>

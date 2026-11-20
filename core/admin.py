@@ -86,12 +86,21 @@ class TeamMemberAdmin(admin.ModelAdmin):
 
 @admin.register(Application)
 class ApplicationAdmin(admin.ModelAdmin):
-    list_display = ("full_name", "track", "country", "experience_level", "status",
-                    "confirmation_email_sent", "created_at")
-    list_filter = ("status", "track", "experience_level", "education_level", "has_laptop")
+    list_display = ("full_name", "track", "email", "phone", "country", "education_level",
+                    "status", "confirmation_email_sent", "created_at")
+    list_filter = ("status", "track", "education_level", "gender", "age_range", "referral_source",
+                   "past_student", "needs_placement_support", "country")
     list_editable = ("status",)
-    search_fields = ("full_name", "email", "phone", "country")
-    readonly_fields = ("user", "confirmation_email_sent", "created_at", "updated_at")
+    search_fields = ("full_name", "first_name", "last_name", "email", "phone", "country", "city", "student_number")
+    readonly_fields = ("user", "full_name", "confirmation_email_sent", "created_at", "updated_at")
+    date_hierarchy = "created_at"
+    fieldsets = (
+        ("Program", {"fields": ("track", "status", "user", "created_at", "updated_at", "confirmation_email_sent")}),
+        ("Applicant", {"fields": ("first_name", "last_name", "full_name", "email", "gender", "age_range",
+                                  "phone", "country", "city")}),
+        ("Education", {"fields": ("education_level", "institution", "past_student", "student_number")}),
+        ("Other", {"fields": ("referral_source", "motivation", "needs_placement_support")}),
+    )
 
 
 @admin.register(ContactMessage)

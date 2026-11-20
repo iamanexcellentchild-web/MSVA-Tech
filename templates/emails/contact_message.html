@@ -1,0 +1,21 @@
+<!doctype html>
+<html><body style="margin:0;padding:0;background:#f4f4f4;font-family:Segoe UI,Arial,sans-serif;color:#111111;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f4;padding:24px 0;">
+    <tr><td align="center">
+      <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:12px;overflow:hidden;border:1px solid #e2e8f0;">
+        <tr><td style="background:#111111;padding:20px 28px;border-bottom:4px solid #d4af37;">
+          <span style="color:#d4af37;font-weight:800;letter-spacing:2px;font-size:15px;">{{ academy.name|upper }}</span>
+          <div style="color:#ffffff;font-size:13px;margin-top:4px;">New website contact message</div>
+        </td></tr>
+        <tr><td style="padding:26px 28px;">
+          <p style="margin:0 0 6px 0;font-size:13px;color:#555555;">From</p>
+          <p style="margin:0 0 16px 0;font-size:16px;font-weight:700;">{{ msg.name }} &lt;<a href="mailto:{{ msg.email }}" style="color:#aa7c11;">{{ msg.email }}</a>&gt;</p>
+          <p style="margin:0 0 6px 0;font-size:13px;color:#555555;">Subject</p>
+          <p style="margin:0 0 16px 0;font-size:16px;font-weight:700;">{{ msg.subject }}</p>
+          <div style="background:#f9f9f9;border-left:4px solid #d4af37;border-radius:6px;padding:16px 18px;white-space:pre-wrap;line-height:1.6;font-size:15px;">{{ msg.message }}</div>
+          <p style="margin:18px 0 0 0;font-size:13px;color:#555555;">Reply to this email to answer {{ msg.name }} directly.{% if admin_url %} · <a href="{{ admin_url }}" style="color:#aa7c11;">View in admin</a>{% endif %}</p>
+        </td></tr>
+      </table>
+    </td></tr>
+  </table>
+</body></html>

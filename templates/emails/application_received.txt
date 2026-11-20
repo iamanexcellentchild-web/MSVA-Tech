@@ -1,4 +1,4 @@
-Hi {{ application.full_name }},
+Hi {{ application.first_name|default:application.full_name }},
 
 Thank you for applying to the {{ application.track.title }} track at {{ academy.name }}!
 

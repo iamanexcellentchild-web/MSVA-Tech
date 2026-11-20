@@ -62,24 +62,108 @@ class SiteTests(TestCase):
         resp = self.client.get(reverse("accounts:dashboard"))
         self.assertEqual(resp.status_code, 302)
 
-    def test_apply_embeds_google_form(self):
+    def _application_data(self, **overrides):
+        data = {
+            "first_name": "Ada", "last_name": "Lovelace", "gender": "female", "phone": "+2348000000000",
+            "country": "Nigeria", "city": "Lagos", "age_range": "17-25", "education_level": "undergraduate",
+            "institution": "University of Lagos", "referral_source": "instagram",
+            "past_student_choice": "no", "student_number": "", "track": self.track.pk,
+            "motivation": "I want to become a SOC analyst.", "placement_choice": "yes",
+        }
+        data.update(overrides)
+        return data
+
+    def test_apply_form_has_every_google_form_question(self):
         login_with_jwt(self.client, self.user)
         resp = self.client.get(reverse("core:apply_track", args=[self.track.slug]))
-        self.assertContains(resp, settings.ACADEMY["apply_form_embed_url"])
-        self.assertContains(resp, reverse("core:apply_thanks"))
+        for text in ["First name", "Last name", "Gender", "Phone number", "Country of residence", "City of residence",
+                     "Age", "Educational level", "university, college or polytechnic", "How did you hear about us",
+                     "past MSVA student", "student number", "Program of choice", "Why did you choose this program",
+                     "priority support"]:
+            self.assertContains(resp, text)
+        self.assertRegex(resp.content.decode(), rf'<input[^>]*name="track"[^>]*value="{self.track.pk}"[^>]*checked')
+        self.assertContains(resp, "ada@example.com")  # email comes from the account
 
-    def test_thanks_page_shows_chosen_track(self):
+    def test_application_saves_to_portal_and_emails_applicant(self):
         login_with_jwt(self.client, self.user)
-        self.client.get(reverse("core:apply_track", args=[self.track.slug]))
+        resp = self.client.post(reverse("core:apply"), self._application_data(email="evil@example.com"))
+        self.assertRedirects(resp, reverse("core:apply_thanks"))
+
+        app = Application.objects.get(user=self.user)
+        self.assertEqual(app.email, "ada@example.com")
+        self.assertEqual(app.full_name, "Ada Lovelace")
+        self.assertTrue(app.needs_placement_support)
+        self.assertFalse(app.past_student)
+        self.assertTrue(app.confirmation_email_sent)
+
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(mail.outbox[0].to, ["ada@example.com"])
+        self.assertIn("Cybersecurity", mail.outbox[0].subject)
+        self.assertIn("under review", mail.outbox[0].body)
+        self.assertIn("shortlisted", mail.outbox[0].body)
+
         thanks = self.client.get(reverse("core:apply_thanks"))
-        self.assertContains(thanks, "Thanks for filling the form")
-        self.assertContains(thanks, "you will be contacted")
+        self.assertContains(thanks, "Thanks for filling the form, Ada")
         self.assertContains(thanks, "Cybersecurity")
 
-    def test_contact_form(self):
+        dash = self.client.get(reverse("accounts:dashboard"))
+        self.assertContains(dash, "Cybersecurity")
+        self.assertContains(dash, "Submitted - Under Review")
+
+    def test_required_answers_and_student_number_rule(self):
+        login_with_jwt(self.client, self.user)
+        resp = self.client.post(reverse("core:apply"), self._application_data(gender="", past_student_choice="yes"))
+        self.assertEqual(resp.status_code, 200)
+        self.assertContains(resp, "Please enter your MSVA student number.")
+        self.assertContains(resp, "This field is required.")
+        self.assertFalse(Application.objects.exists())
+
+        self.client.post(reverse("core:apply"), self._application_data(past_student_choice="yes", student_number="MSVA-0042"))
+        self.assertEqual(Application.objects.get().student_number, "MSVA-0042")
+
+    def test_duplicate_application_rejected(self):
+        login_with_jwt(self.client, self.user)
+        self.client.post(reverse("core:apply"), self._application_data())
+        resp = self.client.post(reverse("core:apply"), self._application_data())
+        self.assertContains(resp, "already applied")
+        self.assertEqual(Application.objects.count(), 1)
+
+    def test_email_failure_does_not_break_submission(self):
+        login_with_jwt(self.client, self.user)
+        with mock.patch("django.core.mail.EmailMultiAlternatives.send", side_effect=OSError("mail down")):
+            resp = self.client.post(reverse("core:apply"), self._application_data())
+        self.assertRedirects(resp, reverse("core:apply_thanks"))
+        self.assertFalse(Application.objects.get().confirmation_email_sent)
+
+    @override_settings(CONTACT_INBOX="admissions@example.com")
+    def test_contact_form_is_forwarded_to_the_academy_inbox(self):
         resp = self.client.post(reverse("core:contact"), {
             "name": "Bola", "email": "bola@example.com", "subject": "Hi", "message": "Question about tracks"})
         self.assertRedirects(resp, reverse("core:contact"))
+        self.assertEqual(len(mail.outbox), 1)
+        sent = mail.outbox[0]
+        self.assertEqual(sent.to, ["admissions@example.com"])
+        self.assertIn("Hi", sent.subject)
+        self.assertIn("Question about tracks", sent.body)
+        self.assertEqual(sent.reply_to, ["Bola <bola@example.com>"])
+
+    def test_superuser_can_use_admin_while_signed_in_as_a_site_user(self):
+        admin_user = User.objects.create_superuser("boss", "boss@example.com", "Admin-Pass-123")
+        login_with_jwt(self.client, self.user)  # a normal account is signed in on the site
+        self.client.login(username="boss", password="Admin-Pass-123")  # then the admin signs in on /admin/
+        self.assertEqual(self.client.get("/admin/").status_code, 200)
+        self.assertNotEqual(admin_user.pk, self.user.pk)
+
+    def test_pages_are_not_cacheable_by_cdn(self):
+        resp = self.client.get("/")
+        self.assertIn("no-store", resp["Cache-Control"])
+        self.assertEqual(resp["Netlify-CDN-Cache-Control"], "no-store")
+
+    def test_friendly_404_and_csrf_pages(self):
+        self.assertContains(self.client.get("/no-such-page/"), "PAGE NOT FOUND", status_code=404)
+        csrf_client = self.client_class(enforce_csrf_checks=True)
+        resp = csrf_client.post(reverse("accounts:logout"))
+        self.assertContains(resp, "SESSION EXPIRED", status_code=403)
 
 
 @override_settings(MEDIA_ROOT=TEST_MEDIA)
@@ -318,3 +402,24 @@ class AdvisorTests(TestCase):
         for stat in Stat.objects.all():
             self.assertIn(f"{stat.value:,}{stat.suffix}", html)
         self.assertNotIn(">0</strong>", html)
+
+
+class BrevoBackendTests(TestCase):
+    @override_settings(EMAIL_BACKEND="msva.email_backends.BrevoEmailBackend", BREVO_API_KEY="test-key",
+                       DEFAULT_FROM_EMAIL="MS. Virtual Academy <admissions@example.com>")
+    def test_sends_html_email_over_https_api(self):
+        from django.core.mail import EmailMultiAlternatives
+
+        with mock.patch("msva.email_backends.requests.post") as post:
+            post.return_value.raise_for_status.return_value = None
+            msg = EmailMultiAlternatives("Hello", "plain body", None, ["ada@example.com"], reply_to=["Bola <b@example.com>"])
+            msg.attach_alternative("<p>html body</p>", "text/html")
+            self.assertEqual(msg.send(), 1)
+        url, kwargs = post.call_args[0][0], post.call_args[1]
+        self.assertEqual(url, "https://api.brevo.com/v3/smtp/email")
+        self.assertEqual(kwargs["headers"]["api-key"], "test-key")
+        body = kwargs["json"]
+        self.assertEqual(body["sender"], {"email": "admissions@example.com", "name": "MS. Virtual Academy"})
+        self.assertEqual(body["to"], [{"email": "ada@example.com"}])
+        self.assertEqual(body["htmlContent"], "<p>html body</p>")
+        self.assertEqual(body["replyTo"], {"email": "b@example.com", "name": "Bola"})

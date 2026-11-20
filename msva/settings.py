@@ -60,6 +60,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "msva.health.HealthCheckMiddleware",  # must stay first
+    "msva.health.NoCacheHTMLMiddleware",
     "django.middleware.security.SecurityMiddleware",
     # Serves the collected static files in production (no separate web server needed).
     "whitenoise.middleware.WhiteNoiseMiddleware",
@@ -177,7 +178,12 @@ GOOGLE_OAUTH_REDIRECT_URI = os.getenv("GOOGLE_OAUTH_REDIRECT_URI", "")
 # --------------------------------------------------------------------------
 EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER", "")
 EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD", "").replace(" ", "")
-if EMAIL_HOST_USER and EMAIL_HOST_PASSWORD:
+# Brevo (HTTPS API) is used when BREVO_API_KEY is set: it works on Render's free plan,
+# which blocks SMTP. Otherwise Gmail SMTP if configured, else emails print to the console.
+BREVO_API_KEY = os.getenv("BREVO_API_KEY", "")
+if BREVO_API_KEY:
+    EMAIL_BACKEND = "msva.email_backends.BrevoEmailBackend"
+elif EMAIL_HOST_USER and EMAIL_HOST_PASSWORD:
     EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 else:
     EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
@@ -185,6 +191,10 @@ EMAIL_HOST = os.getenv("EMAIL_HOST", "smtp.gmail.com")
 EMAIL_PORT = int(os.getenv("EMAIL_PORT", "587"))
 EMAIL_USE_TLS = True
 EMAIL_TIMEOUT = 15
+# Send emails in a background thread so visitors never wait on the mail service (off in tests).
+EMAIL_ASYNC = env_bool("EMAIL_ASYNC", not TESTING)
+# Where contact-form messages are delivered.
+CONTACT_INBOX = os.getenv("CONTACT_INBOX", "ms.virtualacademy247@gmail.com")
 DEFAULT_FROM_EMAIL = os.getenv(
     "DEFAULT_FROM_EMAIL",
     f"MS. Virtual Academy <{EMAIL_HOST_USER or 'no-reply@msvirtualacademy.com'}>",
@@ -218,6 +228,11 @@ ACADEMY = {
          "url": "https://www.x.com/MSVirtualAcad"},
     ],
 }
+
+# Forms posted from any allowed domain (custom domain, Netlify address) pass the CSRF origin check.
+CSRF_TRUSTED_ORIGINS += [f"https://{h.lstrip('.')}" for h in ALLOWED_HOSTS
+                         if h not in ("localhost", "127.0.0.1", "*") and f"https://{h.lstrip('.')}" not in CSRF_TRUSTED_ORIGINS]
+CSRF_FAILURE_VIEW = "core.views.csrf_failure"
 
 if not DEBUG:
     if SECRET_KEY.startswith("django-insecure"):

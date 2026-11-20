@@ -55,7 +55,11 @@ class JWTCookieMiddleware:
             except TokenError:
                 user = None
 
-        if user is not None:
+        # On /admin/, a session login made on the admin page wins, so signing in there as a
+        # superuser works even while the browser also holds a normal site account's tokens.
+        admin_session = request.path.startswith("/admin/") and request.user.is_authenticated
+
+        if user is not None and not admin_session:
             request.user = user
             request._cached_user = user
         elif raw_access or raw_refresh:

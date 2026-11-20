@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}SESSION EXPIRED | {{ academy.name }}{% endblock %}
+{% block content %}
+<section class="hero">
+    <div class="hero-content thanks-content">
+        <div class="thanks-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+        <h1>SESSION EXPIRED</h1>
+        <p class="description">That form was open for too long or was sent from an old page, so we couldn't accept it for security reasons. Please go back, refresh the page and try again.</p>
+        <div class="hero-actions"><a href="javascript:history.back()" class="cta-btn pulse-btn">Go back and refresh</a></div>
+    </div>
+</section>
+{% endblock %}

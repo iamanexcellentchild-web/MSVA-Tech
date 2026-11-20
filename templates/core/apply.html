@@ -1,32 +1,91 @@
 {% extends "base.html" %}
+{% load static %}
 
-{% block title %}Apply | {{ academy.name }}{% endblock %}
+{% block title %}Scholarship Application | {{ academy.name }}{% endblock %}
 
 {% block content %}
-{% if track %}
-    {% include "partials/page_hero.html" with eyebrow="Admissions" heading="APPLICATION FORM" subheading="Applying for the "|add:track.title|add:" track. Shortlisted applicants will be contacted by our admissions team." %}
-{% else %}
-    {% include "partials/page_hero.html" with eyebrow="Admissions" heading="APPLICATION FORM" subheading="Tell us about yourself. Shortlisted applicants will be contacted by our admissions team." %}
-{% endif %}
+{% include "partials/page_hero.html" with eyebrow="The Achievers Cohort" heading="MS VIRTUAL SCHOLARSHIP FORM" subheading="A full scholarship: no application fee, no tuition. Fill this form accurately to secure your spot." %}
 
 <section class="benefits">
-    <div class="form-card form-card--narrow google-form-card">
-        <iframe id="apply-form" class="google-form-frame" src="{{ academy.apply_form_embed_url }}"
-                title="Application form" loading="eager">Loading…</iframe>
-        <p class="google-form-fallback">
-            Form not loading? <a href="{{ academy.apply_url }}" target="_blank" rel="noopener">Open it in a new tab</a>.
-        </p>
+    <div class="form-card form-card--narrow apply-card">
+        <details class="apply-intro" open>
+            <summary><i class="fa-solid fa-award"></i> Why apply?</summary>
+            <p>Welcome to the MS Virtual Academy Achievers Scholarship Cohort! Master in-demand digital skills through intensive,
+               hands-on programs. We have empowered over 8,000 graduates to build thriving careers.</p>
+            <ul class="check-list">
+                <li><strong>100% practical learning:</strong> real-world, project-based training.</li>
+                <li><strong>Global community:</strong> a network of over 12,000 active trainees and tech disruptors.</li>
+                <li><strong>Career acceleration:</strong> mentorship, professional portfolios and global opportunities.</li>
+                <li>Stipends of up to $11 for trainees (strictly limited).</li>
+                <li>Direct internships with our partner organizations.</li>
+                <li>Your own self-paced portal and a platform for networking with fellow scholars.</li>
+                <li>A chance to earn our globally recognized certificates.</li>
+            </ul>
+            <p class="apply-note"><i class="fa-solid fa-circle-info"></i> Paid internships are limited and available to top performers.</p>
+            <p class="apply-warning"><i class="fa-solid fa-shield-halved"></i> We do not charge an application fee and you do not pay tuition.
+               This is a full scholarship. Do not pay a third-party agent to apply: we don't accept payments.</p>
+        </details>
+
+        <form method="post" novalidate>
+            {% csrf_token %}
+            {% if form.non_field_errors %}
+                <div class="flash flash-error"><i class="fa-solid fa-circle-exclamation"></i><span>{{ form.non_field_errors|join:" " }}</span></div>
+            {% elif form.errors %}
+                <div class="flash flash-error"><i class="fa-solid fa-circle-exclamation"></i><span>Please fix the highlighted answers below.</span></div>
+            {% endif %}
+
+            <h3 class="form-section-title"><i class="fa-solid fa-user"></i> About you</h3>
+            <div class="form-grid">
+                {% include "partials/form_field.html" with field=form.first_name %}
+                {% include "partials/form_field.html" with field=form.last_name %}
+                {% include "partials/form_field.html" with field=form.email wide=True %}
+                {% include "partials/radio_field.html" with field=form.gender wide=True cols="3" %}
+                {% include "partials/radio_field.html" with field=form.age_range wide=True cols="5" %}
+                {% include "partials/form_field.html" with field=form.phone wide=True %}
+                {% include "partials/form_field.html" with field=form.country %}
+                {% include "partials/form_field.html" with field=form.city %}
+            </div>
+
+            <h3 class="form-section-title"><i class="fa-solid fa-graduation-cap"></i> Education</h3>
+            <div class="form-grid">
+                {% include "partials/radio_field.html" with field=form.education_level wide=True cols="3" %}
+                <div class="form-field--wide" id="institutionWrap">
+                    {% include "partials/form_field.html" with field=form.institution %}
+                </div>
+                {% include "partials/radio_field.html" with field=form.past_student_choice wide=True cols="2" %}
+                <div class="form-field--wide" id="studentNumberWrap">
+                    {% include "partials/form_field.html" with field=form.student_number %}
+                </div>
+            </div>
+
+            <h3 class="form-section-title"><i class="fa-solid fa-laptop-code"></i> Your program</h3>
+            <div class="form-grid">
+                {% include "partials/radio_field.html" with field=form.track wide=True cols="2" %}
+                {% include "partials/form_field.html" with field=form.motivation wide=True %}
+                {% include "partials/radio_field.html" with field=form.referral_source wide=True cols="3" %}
+                {% include "partials/radio_field.html" with field=form.placement_choice wide=True cols="2" %}
+            </div>
+
+            <button type="submit" class="cta-btn pulse-btn apply-submit">Submit application <i class="fa-solid fa-paper-plane"></i></button>
+            <p class="apply-fineprint">Your application is saved to your account. You can follow its status on your dashboard.</p>
+        </form>
     </div>
 </section>
 
 <script>
-    // The Google Form is one page: the iframe loads once for the form and again after Submit.
+    // Only show "institution" for undergraduates and "student number" for past students.
     (function () {
-        var loads = 0;
-        document.getElementById("apply-form").addEventListener("load", function () {
-            loads += 1;
-            if (loads > 1) window.location.href = "{% url 'core:apply_thanks' %}";
-        });
+        function toggle(name, value, wrapId) {
+            const wrap = document.getElementById(wrapId);
+            const update = () => {
+                const checked = document.querySelector('input[name="' + name + '"]:checked');
+                wrap.hidden = !(checked && checked.value === value);
+            };
+            document.querySelectorAll('input[name="' + name + '"]').forEach((el) => el.addEventListener('change', update));
+            update();
+        }
+        toggle('education_level', 'undergraduate', 'institutionWrap');
+        toggle('past_student_choice', 'yes', 'studentNumberWrap');
     })();
 </script>
 {% endblock %}

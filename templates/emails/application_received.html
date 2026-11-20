@@ -13,7 +13,7 @@
         <td style="padding:30px;">
           <h1 style="margin:0 0 6px 0;font-size:24px;color:#000000;">Thank you for applying!</h1>
           <p style="margin:0 0 20px 0;color:#aa7c11;font-weight:700;text-transform:uppercase;letter-spacing:1px;font-size:13px;">{{ application.track.title }} Track</p>
-          <p style="margin:0 0 14px 0;line-height:1.6;">Hi {{ application.full_name }},</p>
+          <p style="margin:0 0 14px 0;line-height:1.6;">Hi {{ application.first_name|default:application.full_name }},</p>
           <p style="margin:0 0 14px 0;line-height:1.6;">
             We have received your application and it is now under review.
             <strong>If you are shortlisted, you will be contacted</strong> by our admissions team using this

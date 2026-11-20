@@ -4,6 +4,14 @@
   publish = "netlify"
   command = "echo 'Proxy only: Django runs on Render'"
 
+# Send visitors on the netlify.app address to the real domain, so cookies and forms
+# (sign in/out, applications) always run on one trusted address.
+[[redirects]]
+  from = "https://msvirtualacad.netlify.app/*"
+  to = "https://msvirtualacademy.com/:splat"
+  status = 301
+  force = true
+
 [[redirects]]
   from = "/*"
   to = "https://msva-7tk9.onrender.com/:splat"

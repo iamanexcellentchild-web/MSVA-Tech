@@ -3,7 +3,8 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Prefetch
 from django.shortcuts import get_object_or_404, redirect, render
 
-from .forms import ContactForm
+from .emails import send_application_confirmation, send_contact_notification
+from .forms import ApplicationForm, ContactForm
 from .models import FAQ, Application, Benefit, Stat, SyllabusWeek, TeamMember, Track
 
 
@@ -54,17 +55,31 @@ def track_detail(request, slug):
 
 @login_required
 def apply(request, slug=None):
-    """Shows the embedded Google Form. ?track=<slug> or /tracks/<slug>/apply/ notes the chosen track."""
+    """MS Virtual Scholarship application. Saved to the user's account, so it shows on their dashboard."""
     slug = slug or request.GET.get("track")
-    track = _published_tracks().filter(slug=slug).first() if slug else None
-    request.session["apply_track_slug"] = track.slug if track else None
-    return render(request, "core/apply.html", {"track": track})
+    initial = {}
+    if slug:
+        track = _published_tracks().filter(slug=slug).first()
+        if track:
+            initial["track"] = track
+
+    form = ApplicationForm(request.POST or None, user=request.user, initial=initial)
+    if request.method == "POST" and form.is_valid():
+        application = form.save()
+        send_application_confirmation(application, request)
+        request.session["last_application_id"] = application.pk
+        return redirect("core:apply_thanks")
+
+    return render(request, "core/apply.html", {"form": form})
 
 
+@login_required
 def apply_thanks(request):
-    slug = request.session.get("apply_track_slug")
-    track = _published_tracks().filter(slug=slug).first() if slug else None
-    return render(request, "core/apply_thanks.html", {"track": track})
+    app_id = request.session.get("last_application_id")
+    application = Application.objects.filter(pk=app_id, user=request.user).select_related("track").first()
+    if application is None:
+        return redirect("accounts:dashboard")
+    return render(request, "core/apply_thanks.html", {"application": application})
 
 
 def benefits(request):
@@ -80,7 +95,13 @@ def contact(request):
     if request.method == "GET" and request.user.is_authenticated:
         form.initial = {"name": request.user.get_full_name(), "email": request.user.email}
     if request.method == "POST" and form.is_valid():
-        form.save()
+        message = form.save()
+        send_contact_notification(message, request)
         messages.success(request, "Thanks for reaching out! Our team will get back to you shortly.")
         return redirect("core:contact")
     return render(request, "core/contact.html", {"form": form, "faqs": FAQ.objects.filter(track__isnull=True)})
+
+
+def csrf_failure(request, reason=""):
+    """Friendly page for an expired or invalid form submission (instead of Django's plain 403)."""
+    return render(request, "403_csrf.html", status=403)

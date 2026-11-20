@@ -167,7 +167,7 @@ class TeamMember(OrderedModel):
 
 
 class Application(models.Model):
-    """A student's application to a track, submitted through the site's application form."""
+    """An application to a track (the MS Virtual Scholarship form), tied to the applicant's account."""
 
     STATUS_CHOICES = [
         ("submitted", "Submitted - Under Review"),
@@ -175,42 +175,54 @@ class Application(models.Model):
         ("accepted", "Accepted"),
         ("not_selected", "Not Selected"),
     ]
-    EDUCATION_CHOICES = [
-        ("secondary", "Secondary School"),
-        ("undergraduate", "Undergraduate / Student"),
-        ("graduate", "Graduate (BSc/HND)"),
-        ("postgraduate", "Postgraduate"),
-        ("other", "Other"),
+    GENDER_CHOICES = [("male", "Male"), ("female", "Female"), ("prefer_not", "Prefer not to say")]
+    AGE_CHOICES = [
+        ("10-16", "10 - 16"), ("17-25", "17 - 25"), ("26-35", "26 - 35"),
+        ("36-50", "36 - 50"), ("51+", "51 and above"),
     ]
-    EXPERIENCE_CHOICES = [
-        ("none", "No experience - complete beginner"),
-        ("some", "Some self-taught experience"),
-        ("intermediate", "Intermediate - built small projects"),
-        ("advanced", "Advanced - working in the field"),
+    EDUCATION_CHOICES = [
+        ("high_school", "High School"),
+        ("undergraduate", "Undergraduate"),
+        ("degree", "Degree"),
+        ("masters", "Masters"),
+        ("phd", "PhD"),
+        ("nce", "NCE"),
     ]
     REFERRAL_CHOICES = [
-        ("youtube", "YouTube"),
-        ("instagram", "Instagram"),
+        ("whatsapp", "WhatsApp"),
         ("linkedin", "LinkedIn"),
-        ("x", "X (Twitter)"),
-        ("friend", "Friend / Referral"),
-        ("other", "Other"),
+        ("tiktok", "TikTok"),
+        ("friend", "Through a friend"),
+        ("family_school", "Through a family member or school official"),
+        ("website", "Our website"),
+        ("instagram", "Instagram"),
+        ("x", "Twitter (X)"),
+        ("scholarship_platform", "Scholarship platforms"),
     ]
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="applications", on_delete=models.CASCADE)
-    track = models.ForeignKey(Track, related_name="applications", on_delete=models.CASCADE)
+    track = models.ForeignKey(Track, related_name="applications", on_delete=models.CASCADE,
+                              verbose_name="Program of choice")
 
-    full_name = models.CharField(max_length=150)
+    first_name = models.CharField(max_length=80, default="")
+    last_name = models.CharField(max_length=80, default="")
+    full_name = models.CharField(max_length=160, editable=False)
     email = models.EmailField()
-    phone = models.CharField(max_length=30, help_text="Include country code, e.g. +234...")
-    country = models.CharField(max_length=80)
-    city = models.CharField(max_length=80, blank=True)
+    gender = models.CharField(max_length=12, choices=GENDER_CHOICES, default="", blank=True)
+    phone = models.CharField(max_length=30, help_text="Include the country code, e.g. +234...")
+    country = models.CharField(max_length=80, verbose_name="Country of residence")
+    city = models.CharField(max_length=80, verbose_name="City of residence")
+    age_range = models.CharField(max_length=8, choices=AGE_CHOICES, default="", blank=True, verbose_name="Age")
     education_level = models.CharField(max_length=20, choices=EDUCATION_CHOICES)
-    experience_level = models.CharField(max_length=20, choices=EXPERIENCE_CHOICES)
-    has_laptop = models.BooleanField(default=False, verbose_name="Has a laptop & internet access")
-    weekly_hours = models.PositiveIntegerField(default=10, verbose_name="Hours available per week")
-    motivation = models.TextField(verbose_name="Why do you want to join this track?")
-    referral_source = models.CharField(max_length=20, choices=REFERRAL_CHOICES, blank=True)
+    institution = models.CharField(max_length=200, blank=True,
+                                   verbose_name="University, college or polytechnic (undergraduates)")
+    referral_source = models.CharField(max_length=24, choices=REFERRAL_CHOICES, blank=True,
+                                       verbose_name="How did you hear about us?")
+    past_student = models.BooleanField(default=False, verbose_name="Past MSVA student")
+    student_number = models.CharField(max_length=40, blank=True)
+    motivation = models.TextField(blank=True, verbose_name="Why did you choose this program?")
+    needs_placement_support = models.BooleanField(
+        default=False, verbose_name="Needs priority support for internship and job placement")
 
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="submitted")
     confirmation_email_sent = models.BooleanField(default=False)
@@ -220,6 +232,10 @@ class Application(models.Model):
     class Meta:
         ordering = ["-created_at"]
         unique_together = [("user", "track")]
+
+    def save(self, *args, **kwargs):
+        self.full_name = f"{self.first_name} {self.last_name}".strip()
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.full_name} -> {self.track}"

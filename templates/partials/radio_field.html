@@ -1,0 +1,10 @@
+<fieldset class="form-field choice-field{% if field.errors %} has-error{% endif %}{% if wide %} form-field--wide{% endif %}"{% if id %} id="{{ id }}"{% endif %}>
+    <legend>{{ field.label }}{% if field.field.required %} <span class="req">*</span>{% endif %}</legend>
+    {% if field.help_text %}<small class="help-text">{{ field.help_text }}</small>{% endif %}
+    <div class="choice-list{% if cols %} choice-list--{{ cols }}{% endif %}">
+        {% for radio in field %}
+        <label class="choice">{{ radio.tag }}<span>{{ radio.choice_label }}</span></label>
+        {% endfor %}
+    </div>
+    {% for error in field.errors %}<small class="field-error">{{ error }}</small>{% endfor %}
+</fieldset>

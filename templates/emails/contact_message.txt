@@ -1,0 +1,10 @@
+New message from the {{ academy.name }} website contact form.
+
+From: {{ msg.name }} <{{ msg.email }}>
+Subject: {{ msg.subject }}
+Sent: {{ msg.created_at|date:"F j, Y, g:i a" }}
+
+{{ msg.message }}
+
+Reply to this email to answer {{ msg.name }} directly.
+{% if admin_url %}View in admin: {{ admin_url }}{% endif %}
